@@ -12,9 +12,14 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import com.floxcat.hooklinspirer.utils.UtilsForHook;
 
 public class HookMain  implements IXposedHookLoadPackage {
+
+    private String className = "";
+
     @Override
     public void handleLoadPackage (XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-//        if (!lpparam.packageName.equals("com.innofidei.guardsecure")) {
+        this.className = lpparam.packageName;
+        XposedBridge.log("[HookLinspirer]:hook "+ lpparam.packageName);
+//        if  (!(this.className.equals("com.ndwill.swd.appstore"))|(this.className.equals("com.android.launcher4"))|(this.className.equals("com.android.launcher3"))) {
 //            return;
 //        }
         hookSN(lpparam,"HA12YBEV");
@@ -30,8 +35,6 @@ public class HookMain  implements IXposedHookLoadPackage {
             protected void  afterHookedMethod(MethodHookParam param) throws Throwable {
                 super.afterHookedMethod(param);
                 param.setResult("TB-X605M_S000001_221128_DaWanJiaoYu");
-//                Toast.makeText(Activity,"Version",Toast.LENGTH_SHORT).show();
-//                XposedBridge.log("Version");
             }
         });
     }
@@ -46,20 +49,35 @@ public class HookMain  implements IXposedHookLoadPackage {
         });
     }
     void hookModel(XC_LoadPackage.LoadPackageParam lpparam) {
-        XposedHelpers.findAndHookMethod("com.linspirer.utils.d", lpparam.classLoader, "e", new XC_MethodHook() {
+        // XposedHelpers.findAndHookMethod("com.linspirer.utils.d", lpparam.classLoader, "e", new XC_MethodHook() {
+        //     @Override
+        //     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+        //         super.afterHookedMethod(param);
+        //         param.setResult("Lenovo TB-X605M");
+        //     }
+        // });
+        XposedHelpers.findAndHookMethod(this.className+".network.params.Params", lpparam.classLoader, "setModel", java.lang.String.class, new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
-                param.setResult("Lenovo TB-X605M");
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                param.args[0] = "Lenovo TB-X605M";
             }
         });
     }
     void hookSwdId(XC_LoadPackage.LoadPackageParam lpparam) {
-        XposedHelpers.findAndHookMethod("com.linspirer.utils.d", lpparam.classLoader, "a", android.content.Context.class, new XC_MethodHook() {
+        // XposedHelpers.findAndHookMethod("com.linspirer.utils.d", lpparam.classLoader, "a", android.content.Context.class, new XC_MethodHook() {
+        //     @Override
+        //     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+        //         super.afterHookedMethod(param);
+        //         param.setResult(UtilsForHook.getMacaddres());
+        //     }
+        // });
+        String MacAddres = UtilsForHook.getMacaddres();
+        XposedHelpers.findAndHookMethod(this.className+".network.params.Params", lpparam.classLoader, "setSwdid", java.lang.String.class, new XC_MethodHook() {
             @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                super.afterHookedMethod(param);
-                param.setResult(UtilsForHook.getMacaddres());
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                super.beforeHookedMethod(param);
+                param.args[0] = MacAddres;
             }
         });
     }
